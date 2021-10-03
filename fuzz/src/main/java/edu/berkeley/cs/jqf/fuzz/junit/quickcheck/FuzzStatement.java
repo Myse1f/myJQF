@@ -29,24 +29,13 @@
  */
 package edu.berkeley.cs.jqf.fuzz.junit.quickcheck;
 
-import java.io.EOFException;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;
 import com.pholser.junit.quickcheck.internal.ParameterTypeContext;
 import com.pholser.junit.quickcheck.internal.generator.GeneratorRepository;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
-import edu.berkeley.cs.jqf.fuzz.guidance.Guidance;
-import edu.berkeley.cs.jqf.fuzz.guidance.GuidanceException;
-import edu.berkeley.cs.jqf.fuzz.guidance.TimeoutException;
-import edu.berkeley.cs.jqf.fuzz.guidance.Result;
-import edu.berkeley.cs.jqf.fuzz.guidance.StreamBackedRandom;
-import edu.berkeley.cs.jqf.fuzz.junit.TrialRunner;
+import edu.berkeley.cs.jqf.fuzz.ei.TreeGuidance;
+import edu.berkeley.cs.jqf.fuzz.guidance.*;
 import edu.berkeley.cs.jqf.instrument.InstrumentationException;
 import org.junit.AssumptionViolatedException;
 import org.junit.runners.model.FrameworkMethod;
@@ -55,6 +44,13 @@ import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 import ru.vyarus.java.generics.resolver.GenericsResolver;
 import ru.vyarus.java.generics.resolver.context.MethodGenericsContext;
+
+import java.io.EOFException;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static edu.berkeley.cs.jqf.fuzz.guidance.Result.*;
 
@@ -115,6 +111,9 @@ public class FuzzStatement extends Statement {
                         StreamBackedRandom randomFile = new StreamBackedRandom(guidance.getInput(), Long.BYTES);
                         SourceOfRandomness random = new FastSourceOfRandomness(randomFile);
                         GenerationStatus genStatus = new NonTrackingGenerationStatus(random);
+                        if (guidance instanceof TreeGuidance) {
+                            ((TreeGuidance) guidance).setStatus(genStatus);
+                        }
                         args = generators.stream()
                                 .map(g -> g.generate(random, genStatus))
                                 .toArray();

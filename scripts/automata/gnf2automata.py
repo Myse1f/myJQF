@@ -72,13 +72,13 @@ def prep_transitions(element):
         isRecursive  = False
         # print ('Current state:', state)
         terminal, nonterminals = tokenize(rule)
-        transition = get_template()
-        transition['trigger'] = '_'.join([state, str(count)])
-        transition['source'] = state
-        transition['dest'] = str(state_count) 
-        transition['nonterminals'] = nonterminals 
-        transition['terminal'] = terminal
-        transition['rule'] = "{} -> {}".format(nonterminal, rule )
+        transitions = get_template()
+        transitions['trigger'] = '_'.join([state, str(count)])
+        transitions['source'] = state
+        transitions['dest'] = str(state_count)
+        transitions['nonterminals'] = nonterminals
+        transitions['terminal'] = terminal
+        transitions['rule'] = "{} -> {}".format(nonterminal, rule )
         
         # 创建对应状态的栈信息
         try:
@@ -90,7 +90,7 @@ def prep_transitions(element):
         if nonterminals:
             for symbol in nonterminals[::-1]:
                 state_stack.insert(0, symbol)
-        transition['stack'] = state_stack 
+        transitions['stack'] = state_stack
 
         # 检查栈是否有递归情况，有则增加一个跳转到已有状态的transition
         # print (state_stacks)
@@ -99,10 +99,10 @@ def prep_transitions(element):
                 # print ('Stack:', stack)
                 # print ('State stack:', state_stack)
                 if stack == state_stack:
-                    transition['dest'] = state_element
+                    transitions['dest'] = state_element
                     if DEBUG:
-                        print ('Recursive:', transition)
-                    pda.append(transition)
+                        print ('Recursive:', transitions)
+                    pda.append(transitions)
                     count += 1
                     isRecursive = True
                     break 
@@ -112,13 +112,13 @@ def prep_transitions(element):
             
         # 如果栈深度过大，则忽略此条规则 
         if stack_limit:
-            if (len(transition['stack']) > stack_limit):
-                unexpanded_rules.add(transition['rule'])
+            if (len(transitions['stack']) > stack_limit):
+                unexpanded_rules.add(transitions['rule'])
                 continue
 
-        pda.append(transition)
-        worklist.append([transition['dest'], transition['stack']])
-        state_stacks[transition['dest']] = state_stack
+        pda.append(transitions)
+        worklist.append([transitions['dest'], transitions['stack']])
+        state_stacks[transitions['dest']] = state_stack
         state_count += 1
         count += 1
 
@@ -133,6 +133,7 @@ def tokenize(rule):
     if match and match.group(1):
         terminal = match.group(1)
     else:
+        print(rule)
         raise AssertionError("Rule is not in GNF form")
 
     if match.group(2):
@@ -173,24 +174,24 @@ def postprocess():
     if stack_limit:
 
         blocklist = []
-        for transition in pda:
-            if (transition["dest"] in final) and (len(transition["stack"]) > 0):
-                blocklist.append(transition["dest"])
+        for transitions in pda:
+            if (transitions["dest"] in final) and (len(transitions["stack"]) > 0):
+                blocklist.append(transitions["dest"])
                 continue
             else:
-                culled_pda.append(transition)
+                culled_pda.append(transitions)
         
         culled_final = [state for state in final if state not in blocklist]
         print('culled_final', culled_final)
         assert len(culled_final) == 1, 'More than one final state found'
 
-        for transition in culled_pda:
-            state = transition["source"]
-            if transition["dest"] in blocklist:
+        for transitions in culled_pda:
+            state = transitions["source"]
+            if transitions["dest"] in blocklist:
                     continue
             num_transitions += 1
-            memoized[state].append([transition["trigger"], transition["dest"], 
-                transition["terminal"]])
+            memoized[state].append([transitions["trigger"], transitions["dest"],
+                transitions["terminal"]])
         final_struct["init_state"] = initial[0]
         final_struct["final_state"] = culled_final[0]
         
@@ -201,12 +202,12 @@ def postprocess():
         final_struct["pda"] = memoized
         return final_struct
     
-    for transition in pda:
-       state = transition["source"]
-       memoized[state].append([transition["trigger"], transition["dest"], 
-           transition["terminal"]])
+    for transitions in pda:
+       state = transitions["source"]
+       memoized[state].append([transitions["trigger"], transitions["dest"],
+           transitions["terminal"]])
 
-    final_struct["init_state"] = initial
+    final_struct["init_state"] = initial[0]
     final_struct["final_state"] = final[0]
     print ('状态数:', len(memoized.keys()))
     final_struct["numstates"] = len(memoized.keys()) 
@@ -222,9 +223,9 @@ def _get_states():
     source = set()
     dest = set()
     global pda
-    for transition in pda:
-        source.add(transition["source"])
-        dest.add(transition["dest"])
+    for transitions in pda:
+        source.add(transitions["source"])
+        dest.add(transitions["dest"])
     source_copy = source.copy()
     source_copy.update(dest)
     return list(source_copy), list(dest.difference(source)), list(source.difference(dest))

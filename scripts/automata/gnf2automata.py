@@ -177,21 +177,22 @@ def postprocess():
         for transitions in pda:
             if (transitions["dest"] in final) and (len(transitions["stack"]) > 0):
                 blocklist.append(transitions["dest"])
-                continue
-            else:
-                culled_pda.append(transitions)
+            culled_pda.append(transitions)
         
         culled_final = [state for state in final if state not in blocklist]
         print('culled_final', culled_final)
         assert len(culled_final) == 1, 'More than one final state found'
-
         for transitions in culled_pda:
             state = transitions["source"]
-            if transitions["dest"] in blocklist:
-                    continue
+            dest = transitions["dest"]
+
+            if dest in blocklist:
+                # trick: 让转移到block状态的transition直接转移到culled_final，可能会造成不满足语法的输入
+                print("state: {} transfer to block state {}, make it convert to culled_final {}".format(state, dest, culled_final[0]))
+                transitions["dest"] = culled_final[0]
+
             num_transitions += 1
-            memoized[state].append([transitions["trigger"], transitions["dest"],
-                transitions["terminal"]])
+            memoized[state].append([transitions["trigger"], transitions["dest"], transitions["terminal"]])
         final_struct["init_state"] = initial[0]
         final_struct["final_state"] = culled_final[0]
         

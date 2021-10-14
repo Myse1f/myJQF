@@ -6,12 +6,14 @@ package edu.berkeley.cs.jqf.fuzz.automata;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 
 public class FiniteAutomata {
@@ -90,11 +92,25 @@ public class FiniteAutomata {
         return sb.toString();
     }
 
+    public String generateInput(SourceOfRandomness random) {
+        int state = initState;
+        StringBuilder sb = new StringBuilder();
+        while (state != finalState) {
+            State stateData = states[state];
+            int size = stateData.size();
+            int randTrans = random.nextInt(size);
+            Transition transition = stateData.getTransition(randTrans);
+            sb.append(transition.getSymbol());
+            state = transition.getTargetState();
+        }
+        return sb.toString();
+    }
+
     public static FiniteAutomata createAutomata(String automaFile) throws IOException {
         return createAutomata(new FileInputStream(automaFile));
     }
 
-    public static FiniteAutomata createAutomata(FileInputStream in) throws IOException {
+    public static FiniteAutomata createAutomata(InputStream in) throws IOException {
         String content = IOUtils.toString(in, "utf8");
         JSONObject automataJson = JSONObject.parseObject(content);
 
@@ -120,14 +136,5 @@ public class FiniteAutomata {
         });
 
         return new FiniteAutomata(numStates, states, initState, finalState);
-    }
-
-    public static void main(String[] args) throws IOException {
-        FiniteAutomata automata = createAutomata("/Users/myse1f/Documents/Projects/myJQF/examples/src/test/java/edu/berkeley/cs/jqf/examples/json/json_automata.json");
-        String input = "";
-        while (input.length() < 50) {
-            input = automata.generateInput();
-        }
-        System.out.println(input);
     }
 }

@@ -42,6 +42,8 @@ import com.google.javascript.jscomp.Result;
 import com.google.javascript.jscomp.SourceFile;
 import com.pholser.junit.quickcheck.From;
 import edu.berkeley.cs.jqf.examples.common.AsciiStringGenerator;
+import edu.berkeley.cs.jqf.examples.common.Automata;
+import edu.berkeley.cs.jqf.examples.common.AutomataGenerator;
 import edu.berkeley.cs.jqf.examples.js.JavaScriptCodeGenerator;
 import edu.berkeley.cs.jqf.fuzz.Fuzz;
 import edu.berkeley.cs.jqf.fuzz.JQF;
@@ -114,7 +116,19 @@ public class CompilerTest {
     }
 
     @Fuzz
+    public void testWithAutomataGenerator(@From(AutomataGenerator.class)
+                                                      @Automata("automata/js/js_automata.json") String code) {
+        testWithString(code);
+    }
+
+    @Fuzz
     public void debugWithGenerator(@From(JavaScriptCodeGenerator.class) String code) {
+        debugWithString(code);
+    }
+
+    @Fuzz
+    public void debugWithAutomataGenerator(@From(AutomataGenerator.class)
+                                          @Automata("automata/js/js_automata.json") String code) {
         debugWithString(code);
     }
 }

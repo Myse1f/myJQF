@@ -40,6 +40,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Random;
 
+import edu.berkeley.cs.jqf.fuzz.automata.AutomataGuidance;
 import edu.berkeley.cs.jqf.fuzz.ei.ExecutionIndexingGuidance;
 import edu.berkeley.cs.jqf.fuzz.ei.ZestGuidance;
 import edu.berkeley.cs.jqf.fuzz.guidance.GuidanceException;
@@ -285,6 +286,11 @@ public class FuzzGoal extends AbstractMojo {
     @Parameter(property="fixedSize")
     private boolean fixedSizeInputs;
 
+    /**
+     * The path of automata file.
+     */
+    @Parameter(property="automata")
+    private String automata;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -358,6 +364,9 @@ public class FuzzGoal extends AbstractMojo {
         Random rnd = randomSeed != null ? new Random(randomSeed) : new Random();
         try {
             switch (engine) {
+                case "automata":
+                    guidance = new AutomataGuidance(targetName, duration, trials, resultsDir, rnd, automata);
+                    break;
                 case "zest":
                     guidance = new ZestGuidance(targetName, duration, trials, resultsDir, seedsDir, rnd);
                     break;

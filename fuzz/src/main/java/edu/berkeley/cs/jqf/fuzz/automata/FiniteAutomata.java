@@ -44,6 +44,10 @@ public class FiniteAutomata {
         return states;
     }
 
+    public State getState(int state) {
+        return states[state];
+    }
+
     public void setStates(State[] states) {
         this.states = states;
     }
@@ -77,9 +81,8 @@ public class FiniteAutomata {
         return sb.toString();
     }
 
-    public String generateInput() {
+    public String generateInput(Random random) {
         int state = initState;
-        Random random = new Random();
         StringBuilder sb = new StringBuilder();
         while (state != finalState) {
             State stateData = states[state];
@@ -106,6 +109,23 @@ public class FiniteAutomata {
         return sb.toString();
     }
 
+    public String generateInputWithState(SourceOfRandomness random) {
+        StringBuilder sb = new StringBuilder();
+        int state = random.nextInt();
+        if (state != initState) {
+            throw new RuntimeException("First state is not initial state!");
+        }
+        int prev = state;
+        while (state != finalState){
+            state = random.nextInt();
+            State stateData = states[prev];
+            Terminal terminal = stateData.getTerminal(state);
+            sb.append(terminal.getSymbol());
+            prev = state;
+        }
+        return sb.toString();
+    }
+
     public static FiniteAutomata createAutomata(String automaFile) throws IOException {
         return createAutomata(new FileInputStream(automaFile));
     }
@@ -127,11 +147,13 @@ public class FiniteAutomata {
             int idx = Integer.parseInt(k);
             JSONArray transitions = (JSONArray) v;
             State state = new State(idx);
-            for (Object trans : transitions) {
-                JSONArray transition = (JSONArray) trans;
-                state.addTransition(new Transition(transition.getInteger(1), transition.getString(2)));
+            for (int transitionIdx = 0; transitionIdx < transitions.size(); transitionIdx++) {
+                JSONArray transition = (JSONArray) transitions.get(transitionIdx);
+                int targetState = transition.getInteger(1);
+                String symbol = transition.getString(2);
+                state.addTransition(new Transition(targetState, symbol));
+                state.addTerminal(targetState, new Terminal(idx, symbol, transitionIdx));
             }
-
             states[idx] = state;
         });
 

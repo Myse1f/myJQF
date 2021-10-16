@@ -36,6 +36,6 @@ public class AutomataGenerator extends Generator<String> {
 
     @Override
     public String generate(SourceOfRandomness random, GenerationStatus status) {
-        return automata.generateInput(random);
+        return automata.generateInputWithState(random);
     }
 }

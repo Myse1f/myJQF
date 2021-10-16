@@ -111,9 +111,6 @@ public class FuzzStatement extends Statement {
                         StreamBackedRandom randomFile = new StreamBackedRandom(guidance.getInput(), Long.BYTES);
                         SourceOfRandomness random = new FastSourceOfRandomness(randomFile);
                         GenerationStatus genStatus = new NonTrackingGenerationStatus(random);
-                        if (guidance instanceof TreeGuidance) {
-                            ((TreeGuidance) guidance).setStatus(genStatus);
-                        }
                         args = generators.stream()
                                 .map(g -> g.generate(random, genStatus))
                                 .toArray();

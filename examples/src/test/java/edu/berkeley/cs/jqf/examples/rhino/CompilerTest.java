@@ -36,6 +36,8 @@ import java.nio.charset.StandardCharsets;
 
 import com.pholser.junit.quickcheck.From;
 import edu.berkeley.cs.jqf.examples.common.AsciiStringGenerator;
+import edu.berkeley.cs.jqf.examples.common.Automata;
+import edu.berkeley.cs.jqf.examples.common.AutomataGenerator;
 import edu.berkeley.cs.jqf.examples.js.JavaScriptCodeGenerator;
 import edu.berkeley.cs.jqf.fuzz.Fuzz;
 import edu.berkeley.cs.jqf.fuzz.JQF;
@@ -112,6 +114,10 @@ public class CompilerTest {
         debugWithString(code);
     }
 
-
+    @Fuzz
+    public void testWithAutomataGenerator(@From(AutomataGenerator.class)
+                                          @Automata("automata/js/js_automata.json") String code) {
+        testWithString(code);
+    }
 
 }

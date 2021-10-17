@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,8 @@ public class FiniteAutomata {
     private State[] states;
     private int initState;
     private int finalState;
+
+    private Random jdkRandom = new Random();
 
     public FiniteAutomata(int numStates, State[] states, int initState, int finalState) {
         this.numStates = numStates;
@@ -120,10 +123,22 @@ public class FiniteAutomata {
             state = random.nextInt();
             State stateData = states[prev];
             Terminal terminal = stateData.getTerminal(state);
-            sb.append(terminal.getSymbol());
+            String symbol = handleSymbol(terminal.getSymbol());
+            sb.append(symbol);
             prev = state;
         }
         return sb.toString();
+    }
+
+    private String handleSymbol(String symbol) {
+        if (symbol.startsWith("$$") && symbol.endsWith("$$")) {
+            switch (symbol) {
+                case "$$INTEGER$$": symbol = jdkRandom.nextInt() + ""; break;
+                case "$$STRING$$": symbol = "\"" + RandomStringUtils.randomAlphabetic(10, 100) +"\""; break;
+                case "$$IDENTITY$$": symbol = RandomStringUtils.randomAlphanumeric(1, 10); break;
+            }
+        }
+        return symbol;
     }
 
     public static FiniteAutomata createAutomata(String automaFile) throws IOException {

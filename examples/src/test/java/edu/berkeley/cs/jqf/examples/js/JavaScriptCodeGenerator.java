@@ -55,8 +55,8 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     private GenerationStatus status;
 
     private static final int MAX_IDENTIFIERS = 100;
-    private static final int MAX_EXPRESSION_DEPTH = 10;
-    private static final int MAX_STATEMENT_DEPTH = 6;
+    private static final int MAX_EXPRESSION_DEPTH = 8;
+    private static final int MAX_STATEMENT_DEPTH  = 4;
     private static Set<String> identifiers;
     private int statementDepth;
     private int expressionDepth;
@@ -174,7 +174,7 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     }
 
     private String generateCallNode(SourceOfRandomness random) {
-        String func = generateExpression(random);
+        String func = generateIdentNode(random);
         String args = String.join(",", generateItems(this::generateExpression, random, 3));
 
         String call = func + "(" + args + ")";
@@ -263,7 +263,7 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     }
 
     private String generateIndexNode(SourceOfRandomness random) {
-        return generateExpression(random) + "[" + generateExpression(random) + "]";
+        return generateIdentNode(random) + "[" + generateExpression(random) + "]";
     }
 
     private String generateObjectProperty(SourceOfRandomness random) {
@@ -293,7 +293,7 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     }
 
     private String generatePropertyNode(SourceOfRandomness random) {
-        return generateExpression(random) + "." + generateIdentNode(random);
+        return generateIdentNode(random) + "." + generateIdentNode(random);
     }
 
     private String generateReturnNode(SourceOfRandomness random) {

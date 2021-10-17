@@ -1,5 +1,6 @@
 import json
 import re
+import copy
 from collections import defaultdict
 
 # gnf文法数据 
@@ -158,13 +159,11 @@ def postprocess():
     global pda
     final_struct = {}
     memoized = defaultdict(list)
-    
-    culled_pda = []
-    culled_final = []
+
     num_transitions = 0 
 
 
-    states, final, initial = _get_states()
+    states, final, initial = _get_states(pda)
 
     print ("initial", initial)
     print ("final", final)
@@ -172,23 +171,35 @@ def postprocess():
 
     # 过滤由于栈深度限制的规则
     if stack_limit:
+        while True:
+            if len(final) == 1:
+                break
 
-        blocklist = []
-        for transitions in pda:
-            if (transitions["dest"] in final) and (len(transitions["stack"]) > 0):
-                blocklist.append(transitions["dest"])
-            culled_pda.append(transitions)
-        
-        culled_final = [state for state in final if state not in blocklist]
-        print('culled_final', culled_final)
-        assert len(culled_final) == 1, 'More than one final state found'
+            blocklist = []
+            culled_pda = []
+            culled_final = []
+
+            for transitions in pda:
+                if (transitions["dest"] in final) and (len(transitions["stack"]) > 0):
+                    blocklist.append(transitions["dest"])
+                else:
+                    culled_pda.append(transitions)
+
+            culled_final = [state for state in final if state not in blocklist]
+            # print('culled_final', culled_final)
+            assert len(culled_final) == 1, 'More than one final state found'
+
+            _states, final, _initial = _get_states(culled_pda)
+            pda = culled_pda
+            # print("final", final)
+
         for transitions in culled_pda:
             state = transitions["source"]
             dest = transitions["dest"]
 
             if dest in blocklist:
                 # trick: 让转移到block状态的transition直接转移到culled_final，可能会造成不满足语法的输入
-                print("state: {} transfer to block state {}, make it convert to culled_final {}".format(state, dest, culled_final[0]))
+                # print("state: {} transfer to block state {}, make it convert to culled_final {}".format(state, dest, culled_final[0]))
                 transitions["dest"] = culled_final[0]
 
             num_transitions += 1
@@ -216,14 +227,14 @@ def postprocess():
     return final_struct
 
 
-def _get_states():
+def _get_states(pda):
     '''
     获取状态信息
     [所有状态， 终止状态， 初始状态]
     '''
     source = set()
     dest = set()
-    global pda
+
     for transitions in pda:
         source.add(transitions["source"])
         dest.add(transitions["dest"])

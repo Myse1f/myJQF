@@ -120,4 +120,9 @@ public class CompilerTest {
         testWithString(code);
     }
 
+    @Fuzz
+    public void testWithAutomataGenerator1(@From(AutomataGenerator.class)
+                                           @Automata("automata/js/js_1_automata.json") String code) {
+        testWithString(code);
+    }
 }

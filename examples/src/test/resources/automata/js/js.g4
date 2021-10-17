@@ -30,11 +30,11 @@ BREAK: 'break'
 CONTINUE: 'continue'
 
 RETURN: 'return' |
-        'return' EXPRESSION
+        'return' ' ' EXPRESSION
 
-THROW: 'throw' EXPRESSION
+THROW: 'throw' ' ' EXPRESSION
 
-VAR: 'var' IDENTITY
+VAR: 'var' ' ' IDENTITY
 
 IF: 'if' '(' EXPRESSION ')' BLOCK |
     'if' '(' EXPRESSION ')' BLOCK 'else' BLOCK
@@ -43,14 +43,14 @@ FOR: 'for' '(' EXPRESSION ';' EXPRESSION ';' EXPRESSION ')' BLOCK
 
 WHILE: 'while' '(' EXPRESSION ')' BLOCK
 
-NAMEDFUNCTION: 'function' IDENTITY '(' ARGS ')' BLOCK
+NAMEDFUNCTION: 'function' ' ' IDENTITY '(' ARGS ')' BLOCK
 
 ARGS: IDENTITY |
       IDENTITY ',' ARGS
 
 SWITCH: 'switch' '(' EXPRESSION ')' '{' CASES '}'
 
-CASES: 'case' IDENTITY ':' BLOCK
+CASES: 'case' ' ' IDENTITY ':' BLOCK
 
 TRY: 'try' BLOCK CATCH
 
@@ -82,44 +82,14 @@ LITERAL: ARRAY |
          'null' |
          'this'
 
-INTEGER: '1' |
-         '2' |
-         '3' |
-         '0' |
-         '-1' |
-         '65536'
+INTEGER: '$$INTEGER$$'
 
 BOOLEAN: 'true' |
          'false'
 
-STRING: '"abc"' |
-        '"hello world"'
+STRING: '$$STRING$$'
 
-IDENTITY: 'a' |
-          'b' |
-          'c' |
-          'd' |
-          'e' |
-          'f' |
-          'g' |
-          'h' |
-          'j' |
-          'k' |
-          'l' |
-          'm' |
-          'n' |
-          'o' |
-          'p' |
-          'q' |
-          'r' |
-          's' |
-          't' |
-          'u' |
-          'v' |
-          'w' |
-          'x' |
-          'y' |
-          'z'
+IDENTITY: '$$IDENTITY$$'
 
 BINARYTOKEN: '!=' |
              '!==' | 
@@ -170,7 +140,7 @@ TERNARY: EXPRESSION '?' EXPRESSION ':' EXPRESSION
 
 CALL: IDENTITY '(' ARGS ')'
 
-FUNCTION: 'function' IDENTITY '(' ARGS ')' BLOCK
+FUNCTION: 'function' ' ' IDENTITY '(' ARGS ')' BLOCK
 
 PROPERTY: IDENTITY '.' IDENTITY
 

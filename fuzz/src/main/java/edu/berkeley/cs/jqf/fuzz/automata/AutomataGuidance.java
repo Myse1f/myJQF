@@ -5,6 +5,7 @@
 package edu.berkeley.cs.jqf.fuzz.automata;
 
 import edu.berkeley.cs.jqf.fuzz.ei.ZestGuidance;
+import edu.berkeley.cs.jqf.fuzz.guidance.Result;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class AutomataGuidance extends ZestGuidance {
     private static final int RECURSIVE_THRESHOLD = 6;
 
     private FiniteAutomata automata;
+    private int maxSize;
 
     public AutomataGuidance(String testName, Duration duration, Long trials, File outputDirectory, Random sourceOfRandomness, String automataFile) throws IOException {
         super(testName, duration, trials, outputDirectory, sourceOfRandomness);
@@ -31,6 +33,14 @@ public class AutomataGuidance extends ZestGuidance {
             return  "Semantic Fuzzing with Automata\n" +
                     "--------------------------\n";
         }
+    }
+
+    // Return a list of saving criteria that have been satisfied for a non-failure input
+    protected List<String> checkSavingCriteriaSatisfied(Result result) {
+        if (currentInput.size() > maxSize) {
+            maxSize = currentInput.size();
+        }
+        return super.checkSavingCriteriaSatisfied(result);
     }
 
     protected InputStream createParameterStream() {
@@ -60,6 +70,23 @@ public class AutomataGuidance extends ZestGuidance {
         TerminalInput input = new TerminalInput();
         input.genNewInput(automata.getInitState());
         return input;
+    }
+
+    protected int getTargetChildrenForParent(Input parentInput) {
+        // Baseline is a constant
+        int target = NUM_CHILDREN_BASELINE;
+
+        if (maxCoverage > 0) {
+            target = (NUM_CHILDREN_BASELINE * parentInput.size()) / maxSize;
+        }
+
+        // We absolutely love favored inputs, so fuzz them more
+        if (parentInput.isFavored()) {
+            target = target * 5;
+        }
+
+
+        return target;
     }
 
     public class TerminalInput extends Input<Integer> {
@@ -129,7 +156,7 @@ public class AutomataGuidance extends ZestGuidance {
 
         @Override
         public Input fuzz(Random random) {
-            // todo splice, recursive, random mutate, random generate
+            // mutate: splice, recursive, random mutate, random generate
             initRecursiveFeature();
             TerminalInput newInput = null;
             int initState = automata.getInitState();

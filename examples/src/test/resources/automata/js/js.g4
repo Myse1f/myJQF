@@ -14,16 +14,16 @@ STATEMENT: EXPRESSION |
            TRY |
            BLOCK
 
-EXPRESSION: LITERAL |
-            IDENTITY |
-            BINARY |
-            UNARY |
-            TERNARY |
-            CALL |
-            FUNCTION |
-            PROPERTY |
-            INDEX |
-            ARROWFUNCTION
+EXPRESSION: '(' LITERAL ')' |
+            '(' IDENTITY ')' |
+            '(' BINARY ')' |
+            '(' UNARY ')' |
+            '(' TERNARY ')' |
+            '(' CALL ')' |
+            '(' FUNCTION ')' |
+            '(' PROPERTY ')' |
+            '(' INDEX ')' |
+            '(' ARROWFUNCTION ')'
 
 BREAK: 'break'
 
@@ -138,13 +138,13 @@ UNARY: UNARYTOKEN ' ' EXPRESSION
 
 TERNARY: EXPRESSION '?' EXPRESSION ':' EXPRESSION
 
-CALL: IDENTITY '(' ARGS ')'
+CALL: EXPRESSION '(' ARGS ')'
 
 FUNCTION: 'function' ' ' IDENTITY '(' ARGS ')' BLOCK
 
-PROPERTY: IDENTITY '.' IDENTITY
+PROPERTY: EXPRESSION '.' IDENTITY
 
-INDEX: IDENTITY '[' EXPRESSION ']'
+INDEX: EXPRESSION '[' EXPRESSION ']'
 
 ARROWFUNCTION: '(' ARGS ')' '=>' BLOCK |
                '(' ARGS ')' '=>' EXPRESSION

@@ -174,7 +174,7 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     }
 
     private String generateCallNode(SourceOfRandomness random) {
-        String func = generateIdentNode(random);
+        String func = generateExpression(random);
         String args = String.join(",", generateItems(this::generateExpression, random, 3));
 
         String call = func + "(" + args + ")";
@@ -263,11 +263,11 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     }
 
     private String generateIndexNode(SourceOfRandomness random) {
-        return generateIdentNode(random) + "[" + generateExpression(random) + "]";
+        return generateExpression(random) + "[" + generateExpression(random) + "]";
     }
 
     private String generateObjectProperty(SourceOfRandomness random) {
-        return generateIdentNode(random) + ": " + generateExpression(random);
+        return generateExpression(random) + ": " + generateExpression(random);
     }
 
     private String generateLiteralNode(SourceOfRandomness random) {

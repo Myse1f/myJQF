@@ -69,6 +69,7 @@ public class AutomataGuidance extends ZestGuidance {
     public Input<?> createFreshInput() {
         TerminalInput input = new TerminalInput();
         input.genNewInput(automata.getInitState());
+        input.setSeed();
         return input;
     }
 
@@ -136,6 +137,11 @@ public class AutomataGuidance extends ZestGuidance {
                 }
                 init = true;
             }
+        }
+
+        public void setSeed() {
+            int seed = terminals.hashCode();
+            terminals.set(0, seed);
         }
 
         @Override
@@ -217,7 +223,7 @@ public class AutomataGuidance extends ZestGuidance {
                 case 2:
                     // self random mutate
                     newInput = new TerminalInput();
-                    int randIdx = random.nextInt(terminals.size());
+                    int randIdx = random.nextInt(terminals.size()-1) + 1;
                     for (int i = 0; i < randIdx; i++) {
                         newInput.terminals.add(terminals.get(i));
                     }
@@ -228,7 +234,39 @@ public class AutomataGuidance extends ZestGuidance {
                     newInput = new TerminalInput();
                     newInput.genNewInput(initState);
                     break;
+                case 4:
+                    // shuffle subtree
+                    newInput = new TerminalInput();
+                    if (recursiveState.isEmpty()) {
+                        newInput.genNewInput(initState);
+                    } else {
+                        List<Integer> tmp = new ArrayList<>(recursiveState);
+                        int randState = tmp.get(random.nextInt(tmp.size()));
+                        List<Integer> indices = stateIndex.get(randState);
+                        int firstIndex = indices.get(0);
+                        int lastIndex = indices.get(indices.size()-1);
+                        List<int[]> ranges = new ArrayList<>(indices.size()-1);
+                        for (int i = 0; i < indices.size()-1; i++) {
+                            int[] range = new int[] {indices.get(i), indices.get(i+1)};
+                            ranges.add(range);
+                        }
+                        Collections.shuffle(ranges);
+                        for (int i = 0; i < firstIndex; i++) {
+                            newInput.terminals.add(terminals.get(i));
+                        }
+                        for (int[] range : ranges) {
+                            for (int j = range[0]; j < range[1]; j++) {
+                                newInput.terminals.add(terminals.get(j));
+                            }
+                        }
+                        for (int i = lastIndex; i < terminals.size(); i++) {
+                            newInput.terminals.add(terminals.get(i));
+                        }
+                    }
+                    break;
             }
+
+            newInput.setSeed();
             return newInput;
         }
 

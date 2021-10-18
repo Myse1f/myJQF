@@ -114,10 +114,8 @@ public class FiniteAutomata {
 
     public String generateInputWithState(SourceOfRandomness random) {
         StringBuilder sb = new StringBuilder();
-        int state = random.nextInt();
-        if (state != initState) {
-            throw new RuntimeException("First state is not initial state!");
-        }
+        jdkRandom.setSeed(random.nextInt());
+        int state = initState;
         int prev = state;
         while (state != finalState){
             state = random.nextInt();
@@ -133,9 +131,9 @@ public class FiniteAutomata {
     private String handleSymbol(String symbol) {
         if (symbol.startsWith("$$") && symbol.endsWith("$$")) {
             switch (symbol) {
-                case "$$INTEGER$$": symbol = jdkRandom.nextInt() + ""; break;
-                case "$$STRING$$": symbol = "\"" + RandomStringUtils.randomAlphabetic(10, 100) +"\""; break;
-                case "$$IDENTITY$$": symbol = RandomStringUtils.randomAlphanumeric(1, 10); break;
+                case "$$INTEGER$$": symbol = jdkRandom.nextInt(65536) + ""; break;
+                case "$$STRING$$": symbol = "\"" + RandomStringUtils.random(jdkRandom.nextInt(10)+1, 32, 126, false, false, null, jdkRandom) +"\""; break;
+                case "$$IDENTITY$$": symbol = RandomStringUtils.random(jdkRandom.nextInt(10)+1, '0', 'z', true, true, null, jdkRandom);  break;
             }
         }
         return symbol;

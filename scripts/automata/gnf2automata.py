@@ -13,6 +13,7 @@ pda = []
 worklist = []
 # 状态对应的栈信息
 state_stacks = {} 
+stack_map = {}
 # 栈深度限制，当栈深度大于limit时，忽略此扩展
 stack_limit = None 
 # 由于深度限制，未扩展规则集
@@ -60,7 +61,7 @@ def prep_transitions(element):
     pda : delta(p, a, e) = (q, S)
     fsa : delta(p, a) = (q), q is elements sequence in stack
     '''
-    global gnf_grammar, state_count, pda, worklist, state_stacks, stack_limit, unexpanded_rules, DEBUG
+    global gnf_grammar, state_count, pda, worklist, state_stacks, stack_map, stack_limit, unexpanded_rules, DEBUG
     state = element[0]
     try:
         nonterminal = element[1][0] 
@@ -95,18 +96,29 @@ def prep_transitions(element):
 
         # 检查栈是否有递归情况，有则增加一个跳转到已有状态的transition
         # print (state_stacks)
-        if state_stacks:
-            for state_element, stack in state_stacks.items():
-                # print ('Stack:', stack)
-                # print ('State stack:', state_stack)
-                if stack == state_stack:
-                    transitions['dest'] = state_element
-                    if DEBUG:
-                        print ('Recursive:', transitions)
-                    pda.append(transitions)
-                    count += 1
-                    isRecursive = True
-                    break 
+        # if state_stacks:
+        #     for state_element, stack in state_stacks.items():
+        #         # print ('Stack:', stack)
+        #         # print ('State stack:', state_stack)
+        #         if stack == state_stack:
+        #             transitions['dest'] = state_element
+        #             if DEBUG:
+        #                 print ('Recursive:', transitions)
+        #             pda.append(transitions)
+        #             count += 1
+        #             isRecursive = True
+        #             break
+
+        state_tuple = tuple(state_stack)
+        # print(state_tuple)
+        if state_tuple in stack_map:
+            # print(state_tuple, stack_map[state_tuple])
+            transitions['dest'] = stack_map[state_tuple]
+            if DEBUG:
+                print ('Recursive:', transitions)
+            pda.append(transitions)
+            count += 1
+            isRecursive = True
 
         if isRecursive:
             continue
@@ -120,6 +132,7 @@ def prep_transitions(element):
         pda.append(transitions)
         worklist.append([transitions['dest'], transitions['stack']])
         state_stacks[transitions['dest']] = state_stack
+        stack_map[state_tuple] = transitions['dest']
         state_count += 1
         count += 1
 

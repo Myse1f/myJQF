@@ -132,6 +132,7 @@ public class FiniteAutomata {
         if (symbol.startsWith("$$") && symbol.endsWith("$$")) {
             switch (symbol) {
                 case "$$INTEGER$$": symbol = jdkRandom.nextInt(65536) + ""; break;
+                case "$$NUMBER$$": symbol = jdkRandom.nextDouble() + ""; break;
                 case "$$STRING$$": symbol = "\"" + RandomStringUtils.random(jdkRandom.nextInt(10)+1, 32, 126, false, false, null, jdkRandom) +"\""; break;
                 case "$$IDENTITY$$": symbol = RandomStringUtils.random(jdkRandom.nextInt(10)+1, '0', 'z', true, true, null, jdkRandom);  break;
             }

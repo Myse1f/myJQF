@@ -7,7 +7,7 @@ package edu.berkeley.cs.jqf.examples.json;
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
-import edu.berkeley.cs.jqf.examples.common.AsciiStringGenerator;
+import edu.berkeley.cs.jqf.examples.common.AlphaStringGenerator;
 
 import java.util.*;
 import java.util.function.Function;
@@ -21,7 +21,7 @@ public class JsonGenerator extends Generator<String> {
     private GenerationStatus status;
 
     private static final int MAX_IDENTIFIERS = 100;
-    private static final int MAX_DEPTH = 5;
+    private static final int MAX_DEPTH = 3;
     private int depth;
     private static Set<String> identifiers;
 
@@ -69,7 +69,7 @@ public class JsonGenerator extends Generator<String> {
                 () -> String.valueOf(random.nextInt(-10, 1000)),
                 () -> String.valueOf(random.nextDouble()),
                 () -> String.valueOf(random.nextBoolean()),
-                () -> '"' + new AsciiStringGenerator().generate(random, status) + '"',
+                () -> '"' + new AlphaStringGenerator().generate(random, status) + '"',
                 () -> "null"
         )).get();
     }

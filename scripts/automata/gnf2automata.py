@@ -173,8 +173,7 @@ def postprocess():
     final_struct = {}
     memoized = defaultdict(list)
 
-    num_transitions = 0 
-
+    num_transitions = 0
 
     states, final, initial = _get_states(pda)
 
@@ -185,8 +184,6 @@ def postprocess():
     # 过滤由于栈深度限制的规则
     if stack_limit:
         while True:
-            if len(final) == 1:
-                break
 
             blocklist = []
             culled_pda = []
@@ -203,6 +200,8 @@ def postprocess():
             assert len(culled_final) == 1, 'More than one final state found'
 
             _states, final, _initial = _get_states(culled_pda)
+            if len(final) == 1:
+                break
             pda = culled_pda
             # print("final", final)
 

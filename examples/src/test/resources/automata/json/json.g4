@@ -7,7 +7,10 @@ OBJ: '{' PAIRS '}' |
 PAIR: STRING ':' VALUE
 
 PAIRS: PAIR |
-       PAIR ',' PAIRS
+       PAIR ',' PAIR |
+       PAIR ',' PAIR ',' PAIR |
+       PAIR ',' PAIR ',' PAIR ',' PAIR |
+       PAIR ',' PAIR ',' PAIR ',' PAIR ',' PAIR
 
 ARR: '[' VALUES ']' |
      '[' ']'
@@ -22,7 +25,10 @@ VALUE: STRING |
        'null'
 
 VALUES: VALUE |
-        VALUE ',' VALUES
+        VALUE ',' VALUE |
+        VALUE ',' VALUE ',' VALUE |
+        VALUE ',' VALUE ',' VALUE ',' VALUE |
+        VALUE ',' VALUE ',' VALUE ',' VALUE ',' VALUE
 
 STRING: '$$STRING$$'
 

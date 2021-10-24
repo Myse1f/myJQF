@@ -7,9 +7,7 @@ package edu.berkeley.cs.jqf.fuzz.automata;
 import edu.berkeley.cs.jqf.fuzz.ei.ZestGuidance;
 import edu.berkeley.cs.jqf.fuzz.guidance.Result;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.Duration;
 import java.util.*;
 
@@ -50,7 +48,7 @@ public class AutomataGuidance extends ZestGuidance {
 
             @Override
             public int read() throws IOException {
-                assert currentInput instanceof LinearInput : "AutomataGuidance should only mutate TerminalInput(s)";
+                assert currentInput instanceof TerminalInput : "AutomataGuidance should only mutate TerminalInput(s)";
 
                 TerminalInput terminalInput = (TerminalInput) currentInput;
                 // Attempt to get a value from the list, we only get int from TerminalInput
@@ -88,6 +86,15 @@ public class AutomataGuidance extends ZestGuidance {
 
 
         return target;
+    }
+
+    protected void writeCurrentInputToFile(File saveFile) throws IOException {
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
+            for (Integer b : currentInput) {
+                out.write(b);
+            }
+        }
+
     }
 
     public class TerminalInput extends Input<Integer> {

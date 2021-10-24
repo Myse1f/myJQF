@@ -50,7 +50,7 @@ public class AutomataGuidance extends ZestGuidance {
 
             @Override
             public int read() throws IOException {
-                assert currentInput instanceof LinearInput : "AutomataGuidance should only mutate TerminalInput(s)";
+                assert currentInput instanceof TerminalInput : "AutomataGuidance should only mutate TerminalInput(s)";
 
                 TerminalInput terminalInput = (TerminalInput) currentInput;
                 // Attempt to get a value from the list, we only get int from TerminalInput

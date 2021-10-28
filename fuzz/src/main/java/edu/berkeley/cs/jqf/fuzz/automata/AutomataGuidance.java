@@ -91,7 +91,11 @@ public class AutomataGuidance extends ZestGuidance {
     protected void writeCurrentInputToFile(File saveFile) throws IOException {
         try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
             for (Integer b : currentInput) {
-                out.write(b);
+                // spilit an 4-byte integer to 4 bytes in little endian format
+                for (int i = 0; i < 4; i++) {
+                    int data = (b >> (i*8)) & 0xff;
+                    out.write(data);
+                }
             }
         }
 

@@ -55,8 +55,8 @@ public class JavaScriptCodeGenerator extends Generator<String> {
     private GenerationStatus status;
 
     private static final int MAX_IDENTIFIERS = 100;
-    private static final int MAX_EXPRESSION_DEPTH = 8;
-    private static final int MAX_STATEMENT_DEPTH  = 4;
+    private static final int MAX_EXPRESSION_DEPTH = 10;
+    private static final int MAX_STATEMENT_DEPTH  = 6;
     private static Set<String> identifiers;
     private int statementDepth;
     private int expressionDepth;

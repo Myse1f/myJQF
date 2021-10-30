@@ -1,8 +1,7 @@
 JSON: OBJ |
       ARR
 
-OBJ: '{' PAIRS '}' |
-     '{' '}'
+OBJ: '{' PAIRS '}'
 
 PAIR: STRING ':' VALUE
 
@@ -12,8 +11,7 @@ PAIRS: PAIR |
        PAIR ',' PAIR ',' PAIR ',' PAIR |
        PAIR ',' PAIR ',' PAIR ',' PAIR ',' PAIR
 
-ARR: '[' VALUES ']' |
-     '[' ']'
+ARR: '[' VALUES ']'
 
 VALUE: STRING |
        INT |

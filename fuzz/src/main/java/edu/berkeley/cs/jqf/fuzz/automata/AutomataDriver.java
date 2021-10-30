@@ -21,19 +21,15 @@ public class AutomataDriver {
         String automataFile = args[2];
         String outputDirectoryName = args.length > 3 ? args[3] : "fuzz-results";
         File outputDirectory = new File(outputDirectoryName);
-        File[] seedFiles = null;
-        if (args.length > 4) {
-            seedFiles = new File[args.length-4];
-            for (int i = 3; i < args.length; i++) {
-                seedFiles[i-3] = new File(args[i]);
-            }
-        }
+        Long maxTrials = args.length > 4 ? Long.parseLong(args[4]) : null;
 
         try {
             // Load the guidance
             String title = testClassName+"#"+testMethodName;
-            AutomataGuidance guidance = new AutomataGuidance(title, null, null, outputDirectory, new Random(), automataFile);
-
+            AutomataGuidance guidance = new AutomataGuidance(title, null, maxTrials, outputDirectory, new Random(), automataFile);
+            if (maxTrials != null || System.getenv("JQF_DISABLE_INSTRUMENTATION") != null) {
+                guidance.setBlind(true);
+            }
             // Run the Junit test
             Result res = GuidedFuzzing.run(testClassName, testMethodName, guidance, System.out);
             if (Boolean.getBoolean("jqf.logCoverage")) {

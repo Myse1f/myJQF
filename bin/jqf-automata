@@ -8,10 +8,10 @@ popd > /dev/null
 ROOT_DIR=`dirname $BIN_DIR`
 
 print_usage() {
-  echo "Usage: $0 [-c CLASSPATH] [-v] TEST_CLASS TEST_METHOD AUTOMATA [OUT_DIR]"
+  echo "Usage: $0 [-c CLASSPATH] [-v] TEST_CLASS TEST_METHOD AUTOMATA [OUT_DIR] [MAX_TRIALS]"
 }
 
-while getopts ":c:vt:" opt; do
+while getopts ":c:vnt:" opt; do
   case $opt in
     /?)
       echo "Invalid option: -$OPTARG" >&2
@@ -24,6 +24,9 @@ while getopts ":c:vt:" opt; do
     v)
       export JVM_OPTS="$JVM_OPTS -Djqf.logCoverage=true"
       ;;
+    n) 
+      export JQF_DISABLE_INSTRUMENTATION=1
+      ;;
     t)
       export JVM_OPTS="$JVM_OPTS -Djqf.ei.TIMEOUT=$OPTARG"
       ;;
@@ -32,7 +35,7 @@ done
 shift $((OPTIND-1))
 
 # Check arguments
-if [ $# -lt 2 ]; then
+if [ $# -lt 3 ]; then
   print_usage >&1
   exit 1
 fi

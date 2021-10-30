@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.Arrays;
 
 import edu.berkeley.cs.jqf.fuzz.guidance.Guidance;
 import edu.berkeley.cs.jqf.fuzz.guidance.GuidanceException;
@@ -250,8 +251,12 @@ public class ReproGuidance implements Guidance {
             File resultsCsv = new File(traceDir, "results.csv");
             boolean append = nextFileIdx > 0; // append for all but the first input
             try (PrintStream out = new PrintStream(new FileOutputStream(resultsCsv, append))) {
+                Throwable rootCause = error;
+                while (rootCause.getCause() != null) {
+                    rootCause = rootCause.getCause();
+                }
                 String inputName = getCurrentInputFile().toString();
-                String exception = result == Result.FAILURE ? error.getClass().getName() : "";
+                String exception = result == Result.FAILURE ? error.getClass().getName() + rootCause.getStackTrace()[0].toString() : "";
                 out.printf("%s,%s,%s\n", inputName, result, exception);
             } catch (IOException e) {
                 throw new GuidanceException(e);

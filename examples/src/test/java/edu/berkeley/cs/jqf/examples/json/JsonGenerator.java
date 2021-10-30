@@ -21,7 +21,7 @@ public class JsonGenerator extends Generator<String> {
     private GenerationStatus status;
 
     private static final int MAX_IDENTIFIERS = 100;
-    private static final int MAX_DEPTH = 3;
+    private static final int MAX_DEPTH = 5;
     private int depth;
     private static Set<String> identifiers;
 

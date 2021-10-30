@@ -177,7 +177,7 @@ public class AutomataGuidance extends ZestGuidance {
             initRecursiveFeature();
             TerminalInput newInput = null;
             int initState = automata.getInitState();
-            int choice = random.nextInt(4);
+            int choice = blind ? 3 : random.nextInt(4);
             switch (choice) {
                 case 0:
                     // splice with other input

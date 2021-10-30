@@ -19,24 +19,6 @@ import sys
 import os
 import os.path
 
-if len(sys.argv) != 2:
-    print("Usage: {} results-dir".format(sys.argv[0]))
-    sys.exit()
-basedir = sys.argv[1]
-if not os.path.isdir(basedir):
-    print("Usage: {} results-dir".format(sys.argv[0]))
-    print("ERROR: {} is not a directory".format(basedir))
-    sys.exit()
-else:
-    try:
-        os.mkdir(os.path.join(basedir, "figs"))
-    except FileExistsError:
-        # That's ok, we just wanted to create it in case it didn't exist.
-        pass
-
-dl = DataLoader(basedir)
-dl.load_data()
-
 ### MAIN PLOTTING ###
 def get_x(run):
     x = run[dl.sm['unix_time']]
@@ -97,7 +79,7 @@ def plot(valid_bench, ytype, time):
     elif ytype == "valid_cov":
         plt.ylabel('Branch Cov. by Valids')
     else:
-        plt.ylabel(ytype.split('_'))
+        plt.ylabel(ytype)
     if valid_bench == "rhino" and ytype == "percent_upaths":
         leg = plt.legend(loc=(0.46,0.47))
     else:
@@ -108,9 +90,27 @@ def plot(valid_bench, ytype, time):
     plt.tight_layout()
     figname = "Fig"
     plt.savefig(os.path.join(basedir, "figs/{}_{}.pdf".format(figname, valid_bench)))
-    
-YTYPE = 'valid_cov'
-print("Generating Figure")
-for v in dl.validity:
-    plot(v, YTYPE, 10)
+
+if __name__=='__main__':
+    if len(sys.argv) != 3:
+        print("Usage: {} results-dir reps".format(sys.argv[0]))
+        sys.exit()
+    basedir = sys.argv[1]
+    if not os.path.isdir(basedir):
+        print("Usage: {} results-dir".format(sys.argv[0]))
+        print("ERROR: {} is not a directory".format(basedir))
+        sys.exit()
+    else:
+        try:
+            os.mkdir(os.path.join(basedir, "figs"))
+        except FileExistsError:
+            # That's ok, we just wanted to create it in case it didn't exist.
+            pass
+
+    dl = DataLoader(basedir)
+    dl.load_data()
+    YTYPE = 'valid_cov'
+    print("Generating Figure")
+    for v in dl.validity:
+        plot(v, YTYPE, int(sys.argv[2]))
 

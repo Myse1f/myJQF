@@ -21,14 +21,24 @@ id2=$3
 mkdir -p "$out_dir"
 cd "$out_dir"
 
-for id in $(seq $id1 $id2); do
+# run tech comparison
+# for id in $(seq $id1 $id2); do
 
-  $SCRIPT_DIR/run_benchmark.sh closure closure.CompilerTest $id $time js/js_automata.json
+#   $SCRIPT_DIR/run_benchmark.sh closure closure.CompilerTest $id $time js/js_automata.json
 
-  $SCRIPT_DIR/run_benchmark.sh rhino rhino.CompilerTest $id $time js/js_automata.json
+#   $SCRIPT_DIR/run_benchmark.sh rhino rhino.CompilerTest $id $time js/js_automata.json
 
-  $SCRIPT_DIR/run_benchmark.sh fastjson fastjson.JsonParseTest $id $time json/json_automata.json
+#   $SCRIPT_DIR/run_benchmark.sh fastjson fastjson.JsonParseTest $id $time json/json_automata.json
 
-  $SCRIPT_DIR/run_benchmark.sh gson gson.JsonParseTest $id $time json/json_automata.json
+#   $SCRIPT_DIR/run_benchmark.sh gson gson.JsonParseTest $id $time json/json_automata.json
 
-done
+# done
+
+# run blackbox vs greybox
+$SCRIPT_DIR/run_blackvsgrey.sh closure closure.CompilerTest $time js/js_automata.json
+
+$SCRIPT_DIR/run_blackvsgrey.sh rhino rhino.CompilerTest $time js/js_automata.json
+
+$SCRIPT_DIR/run_blackvsgrey.sh fastjson fastjson.JsonParseTest $time json/json_automata.json
+
+$SCRIPT_DIR/run_blackvsgrey.sh gson gson.JsonParseTest $time json/json_automata.json

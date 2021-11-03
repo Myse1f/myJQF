@@ -5,6 +5,7 @@
 package edu.berkeley.cs.jqf.fuzz.automata;
 
 import edu.berkeley.cs.jqf.fuzz.ei.ZestGuidance;
+import edu.berkeley.cs.jqf.fuzz.guidance.GuidanceException;
 import edu.berkeley.cs.jqf.fuzz.guidance.Result;
 
 import java.io.*;
@@ -16,10 +17,13 @@ public class AutomataGuidance extends ZestGuidance {
 
     private FiniteAutomata automata;
     private int maxSize;
+    private RLLearner learner;
+    protected Set<Integer> uniqueValidInputs = new HashSet<>();
 
     public AutomataGuidance(String testName, Duration duration, Long trials, File outputDirectory, Random sourceOfRandomness, String automataFile) throws IOException {
         super(testName, duration, trials, outputDirectory, sourceOfRandomness);
         automata = FiniteAutomata.createAutomata(automataFile);
+        learner = new RLLearner(0.25, 0.25, 1.0, random);
     }
 
     /* Returns the banner to be displayed on the status screen */
@@ -99,6 +103,22 @@ public class AutomataGuidance extends ZestGuidance {
             }
         }
 
+    }
+
+    @Override
+    public void handleResult(Result result, Throwable error) throws GuidanceException {
+        if (result == Result.SUCCESS || result == Result.INVALID) {
+            learner.update(20);
+            if (!uniqueValidInputs.contains(currentInput.hashCode())) {
+                uniqueValidInputs.add(currentInput.hashCode());
+                learner.update(20);
+            } else {
+                learner.update(0);
+            }
+        } else {
+            learner.update(-1);
+        }
+        super.handleResult(result, error);
     }
 
     public class TerminalInput extends Input<Integer> {

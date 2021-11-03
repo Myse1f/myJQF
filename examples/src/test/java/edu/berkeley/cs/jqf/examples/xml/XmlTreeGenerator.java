@@ -160,6 +160,7 @@ public class XmlTreeGenerator extends Generator<Document> {
         int oldPos = status.valueOf(TreeGuidance.POS).orElse(-1);
         status.setValue(TreeGuidance.DEPTH, depth);
         status.setValue(TreeGuidance.POS, pos);
+        TreeGuidance.addPoint(depth, pos);
         int seed = random.nextInt();
         SourceOfRandomness curRandom = new DummySourceOfRandomness(new Random(), seed);
         int numAttributes = Math.max(0, geometricDistribution.sampleWithMean(MEAN_NUM_ATTRIBUTES, curRandom)-1);
